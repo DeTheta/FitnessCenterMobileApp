@@ -1,0 +1,162 @@
+import { unsplash } from '@/lib/utils'
+import type { Exercise, WorkoutCategory, WorkoutProgram } from './types'
+
+const EXERCISES: Record<WorkoutCategory, Exercise[]> = {
+  Strength: [
+    { name: 'Back Squat', sets: 4, reps: '6', restSec: 120 },
+    { name: 'Romanian Deadlift', sets: 3, reps: '8', restSec: 90 },
+    { name: 'Barbell Bench Press', sets: 4, reps: '6', restSec: 120 },
+    { name: 'Bent-over Row', sets: 3, reps: '10', restSec: 75 },
+    { name: 'Farmer Carry', sets: 3, reps: '40 m', restSec: 60 },
+  ],
+  Cardio: [
+    { name: 'Assault Bike Sprint', sets: 6, reps: '20 s', restSec: 40 },
+    { name: 'Row Intervals', sets: 4, reps: '250 m', restSec: 60 },
+    { name: 'Burpees', sets: 4, reps: '12', restSec: 45 },
+    { name: 'Box Jumps', sets: 4, reps: '10', restSec: 45 },
+    { name: 'Jump Rope', sets: 3, reps: '60 s', restSec: 30 },
+  ],
+  Mobility: [
+    { name: "World's Greatest Stretch", sets: 2, reps: '5 / side', restSec: 15 },
+    { name: 'Cat-Cow Flow', sets: 2, reps: '10', restSec: 15 },
+    { name: '90/90 Hip Switch', sets: 2, reps: '8', restSec: 20 },
+    { name: 'Thoracic Rotation', sets: 2, reps: '8 / side', restSec: 15 },
+    { name: 'Deep Squat Hold', sets: 3, reps: '45 s', restSec: 20 },
+  ],
+  Core: [
+    { name: 'Turkish Get-up', sets: 3, reps: '3 / side', restSec: 60 },
+    { name: 'Dead Bug', sets: 3, reps: '10', restSec: 30 },
+    { name: 'Hollow Body Hold', sets: 3, reps: '30 s', restSec: 30 },
+    { name: 'Kettlebell Windmill', sets: 3, reps: '6 / side', restSec: 45 },
+    { name: 'Pallof Press', sets: 3, reps: '12', restSec: 30 },
+  ],
+  'Full Body': [
+    { name: 'Kettlebell Swing', sets: 5, reps: '15', restSec: 45 },
+    { name: 'Dumbbell Thruster', sets: 4, reps: '10', restSec: 60 },
+    { name: 'Pull-up', sets: 4, reps: '8', restSec: 60 },
+    { name: 'Walking Lunge', sets: 3, reps: '20', restSec: 45 },
+    { name: 'Sled Push', sets: 4, reps: '20 m', restSec: 60 },
+  ],
+}
+
+type Seed = Omit<WorkoutProgram, 'exercises'>
+
+const SEEDS: Seed[] = [
+  {
+    id: 'w-foundations',
+    title: 'Foundations of Strength',
+    category: 'Strength',
+    level: 'Beginner',
+    weeks: 6,
+    sessionsPerWeek: 3,
+    minutes: 45,
+    image: unsplash('1541534741688-6078c6bfb5c5', 1000),
+    featured: true,
+    description:
+      'Master the big lifts with perfect form. A progressive six-week plan that builds raw strength, confidence under the bar, and a base for everything that follows.',
+  },
+  {
+    id: 'w-metcon',
+    title: '20-Min Metcon',
+    category: 'Cardio',
+    level: 'Intermediate',
+    weeks: 4,
+    sessionsPerWeek: 4,
+    minutes: 20,
+    image: unsplash('1517130038641-a774d04afb3c'),
+    description: 'Short, savage, effective. Metabolic conditioning circuits that spike your heart rate and fit any lunch break.',
+  },
+  {
+    id: 'w-kb-core',
+    title: 'Kettlebell Core',
+    category: 'Core',
+    level: 'Intermediate',
+    weeks: 4,
+    sessionsPerWeek: 3,
+    minutes: 30,
+    image: unsplash('1601422407692-ec4eeec1d9b3'),
+    description: 'Build a bulletproof midsection with loaded carries, get-ups, and anti-rotation work using a single kettlebell.',
+  },
+  {
+    id: 'w-mobility',
+    title: 'Mobility Reset',
+    category: 'Mobility',
+    level: 'Beginner',
+    weeks: 3,
+    sessionsPerWeek: 5,
+    minutes: 15,
+    image: unsplash('1599447332412-6bc6830c815a'),
+    description: 'Fifteen minutes a day to unlock tight hips, open your upper back, and move better in every session.',
+  },
+  {
+    id: 'w-hypertrophy',
+    title: 'Hypertrophy Blueprint',
+    category: 'Strength',
+    level: 'Advanced',
+    weeks: 8,
+    sessionsPerWeek: 4,
+    minutes: 60,
+    image: unsplash('1517963879433-6ad2b056d712'),
+    description: 'An upper / lower split engineered for muscle growth, with planned overload and deload weeks built in.',
+  },
+  {
+    id: 'w-full-burn',
+    title: 'Full Body Burn',
+    category: 'Full Body',
+    level: 'Intermediate',
+    weeks: 6,
+    sessionsPerWeek: 3,
+    minutes: 40,
+    image: unsplash('1554284126-aa88f22d8b74'),
+    description: 'Strength and conditioning in one hit. Compound supersets that torch calories and build functional muscle.',
+  },
+  {
+    id: 'w-engine',
+    title: 'Engine Builder',
+    category: 'Cardio',
+    level: 'Advanced',
+    weeks: 6,
+    sessionsPerWeek: 3,
+    minutes: 35,
+    image: unsplash('1607962837359-5e7e89f86776'),
+    description: 'Raise your aerobic ceiling with structured intervals on the bike, rower, and track.',
+  },
+  {
+    id: 'w-deadlift',
+    title: 'Deadlift Mastery',
+    category: 'Strength',
+    level: 'Intermediate',
+    weeks: 5,
+    sessionsPerWeek: 2,
+    minutes: 50,
+    image: unsplash('1556817411-31ae72fa3ea0'),
+    description: 'Technique drills, positional strength, and smart programming to add serious weight to your pull.',
+  },
+  {
+    id: 'w-fight-fit',
+    title: 'Fight Fit',
+    category: 'Full Body',
+    level: 'Advanced',
+    weeks: 4,
+    sessionsPerWeek: 3,
+    minutes: 30,
+    image: unsplash('1716307043003-dbe6a5cc496e'),
+    description: 'Train like a fighter. Rounds of bag work, footwork, and bodyweight conditioning for relentless stamina.',
+  },
+  {
+    id: 'w-desk-detox',
+    title: 'Desk Detox Stretch',
+    category: 'Mobility',
+    level: 'Beginner',
+    weeks: 2,
+    sessionsPerWeek: 7,
+    minutes: 10,
+    image: unsplash('1544367567-0f2fcb009e0b'),
+    description: 'Undo hours of sitting with a quick daily routine for neck, shoulders, hips, and lower back.',
+  },
+]
+
+export const WORKOUT_CATEGORIES: Array<'All' | WorkoutCategory> = ['All', 'Strength', 'Cardio', 'Mobility', 'Core', 'Full Body']
+export const LEVELS = ['All', 'Beginner', 'Intermediate', 'Advanced'] as const
+
+export const WORKOUTS: WorkoutProgram[] = SEEDS.map((w) => ({ ...w, exercises: EXERCISES[w.category] }))
