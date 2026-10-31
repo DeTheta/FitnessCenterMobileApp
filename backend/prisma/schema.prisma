@@ -1,0 +1,98 @@
+// Prisma ORM 7. Configure DATABASE_URL in backend/prisma.config.ts.
+// Include constraints.sql in the initial migration after table creation.
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ClassStatus {
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  // Normalize with trim().toLowerCase() before writing; enforced by SQL CHECK.
+  email        String   @unique @db.VarChar(254)
+  name         String   @db.VarChar(120)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  bookings ClassBooking[]
+
+  @@map("users")
+}
+
+model Trainer {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @db.VarChar(120)
+  expertise String[] @default([])
+  bio       String   @db.Text
+  imageUrl  String   @map("image_url") @db.Text
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  classes GroupClass[]
+
+  @@index([expertise], type: Gin)
+  @@map("trainers")
+}
+
+// Each row is one scheduled session, with its own capacity and reservations.
+model GroupClass {
+  id              String      @id @default(uuid()) @db.Uuid
+  name            String      @db.VarChar(160)
+  description     String?     @db.Text
+  imageUrl        String?     @map("image_url") @db.Text
+  location        String      @db.VarChar(160)
+  startsAt        DateTime    @map("starts_at") @db.Timestamptz(3)
+  endsAt          DateTime    @map("ends_at") @db.Timestamptz(3)
+  capacity        Int
+  // Number of CONFIRMED bookings. Update atomically with booking mutations.
+  currentEnrolled Int         @default(0) @map("current_enrolled")
+  status          ClassStatus @default(SCHEDULED)
+  trainerId       String      @map("trainer_id") @db.Uuid
+  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  trainer  Trainer        @relation(fields: [trainerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  bookings ClassBooking[]
+
+  @@index([status, startsAt])
+  @@index([trainerId, startsAt])
+  @@map("group_classes")
+}
+
+// Explicit many-to-many join. Cancel instead of deleting; rebooking reactivates
+// the same row and resets bookedAt/cancelledAt in the booking transaction.
+model ClassBooking {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @map("user_id") @db.Uuid
+  classId     String        @map("class_id") @db.Uuid
+  status      BookingStatus @default(CONFIRMED)
+  bookedAt    DateTime      @default(now()) @map("booked_at") @db.Timestamptz(3)
+  cancelledAt DateTime?     @map("cancelled_at") @db.Timestamptz(3)
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  groupClass GroupClass @relation(fields: [classId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([userId, classId])
+  @@index([classId, status])
+  @@index([userId, status, bookedAt(sort: Desc)])
+  @@map("class_bookings")
+}

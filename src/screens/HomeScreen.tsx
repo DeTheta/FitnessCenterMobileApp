@@ -26,14 +26,18 @@ export function HomeScreen({ onNavigate, onOpenWorkout }: { onNavigate: (t: Tab)
 
   return (
     <div className="mb-[calc(max(16px,env(safe-area-inset-bottom))-24px)] pt-5 sm:mb-0">
-      {/* Greeting header */}
+      {/* Profile header */}
       <header className="px-5 pt-10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Photo src={USER.avatar} alt={`${USER.firstName} ${USER.lastName}`} className="size-11 rounded-full ring-2 ring-brand ring-offset-2" />
-            <div>
-              <p className="text-[16px] font-bold leading-tight">{USER.firstName} {USER.lastName}</p>
-            </div>
+        <div className="flex w-full flex-col items-center justify-center gap-6">
+          <div className="flex w-full flex-col items-center justify-center gap-4">
+            <Photo
+              src={USER.avatar}
+              alt={`${USER.firstName} ${USER.lastName}`}
+              className="size-20 shrink-0 rounded-full border-4 border-paper shadow-md shadow-ink/10 ring-2 ring-brand"
+            />
+            <h1 className="w-full text-center font-sans text-xl font-bold leading-snug tracking-tight text-ink">
+              {USER.firstName} {USER.lastName}
+            </h1>
           </div>
           <div className="flex gap-2">
             <button
@@ -56,12 +60,6 @@ export function HomeScreen({ onNavigate, onOpenWorkout }: { onNavigate: (t: Tab)
           </div>
         </div>
 
-        <h1 className="mt-7 font-display text-[54px] font-extrabold uppercase leading-[0.84] tracking-tight">
-          Ready to
-          <br />
-          <span className="italic text-brand">outwork</span> yesterday?
-        </h1>
-        <p className="mt-3 text-[13px] font-medium text-ink/50">{longDate()} · {USER.tier}</p>
       </header>
 
       {/* Weekly progress */}
@@ -102,13 +100,13 @@ export function HomeScreen({ onNavigate, onOpenWorkout }: { onNavigate: (t: Tab)
 
       {/* Next up */}
       <section className="mt-8">
-        <SectionTitle title="Next up" action="Schedule" onAction={() => onNavigate('classes')} />
+        <SectionTitle t />
         {next ? (
           <article className="relative mx-5 h-[248px] overflow-hidden rounded-[28px] bg-ink text-white">
             <Photo src={next.image} alt="" className="absolute inset-0 h-full w-full" />
             <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/10" />
             <div className="absolute inset-x-5 top-5 flex items-center justify-between">
-              <span className="rounded-full bg-brand px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-ink">
+              <span className="rounded-full bg-brand px-3 py-1 text-[11px] font-bold upperca se tracking-wider text-ink">
                 {next.kind === 'class' ? 'Group class' : 'Personal training'}
               </span>
               <span className="flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[12px] font-semibold backdrop-blur-md">
@@ -178,42 +176,7 @@ export function HomeScreen({ onNavigate, onOpenWorkout }: { onNavigate: (t: Tab)
         )}
       </section>
 
-      {/* Quick actions */}
-      <section className="mt-8" aria-label="Quick actions">
-        <SectionTitle title="Quick start" />
-        <div className="grid grid-cols-2 gap-3 px-5">
-          <QuickTile tone="brand" icon={<CalendarDays className="size-5" />} label="Book a class" sub="42 this week" onClick={() => onNavigate('classes')} />
-          <QuickTile tone="ink" icon={<Users className="size-5" />} label="Find a trainer" sub="3 on the floor" onClick={() => onNavigate('trainers')} />
-          <QuickTile tone="mist" icon={<Dumbbell className="size-5" />} label="Free workouts" sub={`${WORKOUTS.length} programs`} onClick={() => onNavigate('workouts')} />
-          <QuickTile tone="mist" icon={<QrCode className="size-5" />} label="Check-in pass" sub="Scan at entry" onClick={() => setPassOpen(true)} />
-        </div>
-      </section>
-
-      {/* Free programs */}
-      <section className="mt-8">
-        <SectionTitle title="Free programs" action="See all" onAction={() => onNavigate('workouts')} />
-        <div className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5">
-          {WORKOUTS.slice(0, 5).map((w) => (
-            <button
-              key={w.id}
-              type="button"
-              onClick={() => onOpenWorkout(w.id)}
-              className="group relative h-[270px] w-[200px] shrink-0 snap-start overflow-hidden rounded-[24px] bg-ink text-left text-white"
-            >
-              <Photo src={w.image} alt="" className="absolute inset-0 h-full w-full" imgClassName="transition-transform duration-500 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
-              <span className="absolute left-3 top-3 rounded-full bg-paper px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-ink">{w.level}</span>
-              <div className="absolute inset-x-4 bottom-4">
-                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand">{w.category}</p>
-                <p className="mt-1 font-display text-[24px] font-bold uppercase leading-[0.95]">{w.title}</p>
-                <p className="mt-1.5 text-[12px] text-white/65">
-                  {w.minutes} min · {w.weeks} weeks
-                </p>
-              </div>
-            </button>
-          ))}
-        </div>
-      </section>
+     
 
       <BottomSheet open={!!manage} onClose={() => setManage(null)} label="Manage booking" footer={manage && (
         <div className="flex gap-2">
